@@ -105,6 +105,23 @@ function newBot(playerName = 'HiddenPlayer', serverIp = '127.0.0.1', serverPort 
     serverIp = validateCreds.host(serverIp);
     serverPort = validateCredentials.port(serverPort);
 
+    // Bot core
+    let bot = mineflayer.createBot({
+        host: ip,
+        port: port,
+        username: player,
+        version: version
+    });
+
+    bot.loadPlugin(cmd);
+    bot.loadPlugin(pathfinder);
+    bot.loadPlugin(PvpBot);
+
+    mcLoggedIn = true;
+
+
+
+    // Functions
     function validateCredentials(){
         this.host = (host) => {
             host = host.toString().trim();
