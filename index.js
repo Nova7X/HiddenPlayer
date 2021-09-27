@@ -66,3 +66,8 @@ function prefillConfig(config){
     
     return util.testMode(config);
 }
+function reloadConfig(){
+    config = prefillConfig(parseConfig.parse());
+    language = parseLanguage.parse();
+    response = parseResponse.parse();
+}
