@@ -29,16 +29,14 @@ const Logger = require('./scripts/logger');
 parseConfig.location = './config/config.yml';
 parseLanguage.location = './config/language.yml';
 parseResponse.location = './config/response.yml';
-let log = new Logger();
+const log = new Logger();
 let language = {};
 let response = {};
 let config = prefillConfig(parseConfig.parse());
 
 
 // Core Process
-log.log(language);
-log.log(response);
-log.log(config);
+var mcLoggedIn = false;
 
 
 // Core Functions
@@ -63,11 +61,66 @@ function prefillConfig(config){
 
     response = parseResponse.parse();
     language = parseLanguage.parse();
-    
+
     return util.testMode(config);
 }
-function reloadConfig(){
-    config = prefillConfig(parseConfig.parse());
-    language = parseLanguage.parse();
-    response = parseResponse.parse();
+
+function newBot(playerName = 'HiddenPlayer', serverIp = '127.0.0.1', serverPort = 25565){
+    
+    const mcLog = new Logger();
+        mcLog.defaultPrefix = 'Minecraft';
+    
+    mcLog.log("Creating new bot");
+
+    // Movements
+    const actions = ['forward', 'back', 'left', 'right'];
+    var lasttime = -1;
+    var moveinterval = 5;
+    var maxrandom = 5;
+    var moving = false;
+    var jump = true;
+    var onPVP = false;
+    var lastaction = null;
+
+    // Entities
+    let entity = null;
+
+    // Connection
+    if (mcLoggedIn) {
+        mcLog.warn('Player already connected to a server');
+        return;
+    }
+    switch (true){
+        case (mcLoggedIn):
+            mcLog.warn("Player already connected to a server");
+            return;
+        case (!config.player.enabled):
+            mcLog.warn("Player Disabled");
+            return;
+    }
+
+    mcLog.log(playerName + " is ready to connect!");
+
+    const validateCreds = new validateCredentials();
+    serverIp = validateCreds.host(serverIp);
+    serverPort = validateCredentials.port(serverPort);
+
+    function validateCredentials(){
+        this.host = (host) => {
+            host = host.toString().trim();
+
+            if(host == '') throw new Error("Empty Minecraft player host: "+host);
+
+            return host;
+        }
+        this.port = (port) => {
+            port = parseInt(port);
+
+            if (!util.isNumber || port < 0 || port > 65535){
+                throw new Error("Invalid Minecraft player port: "+port);
+            }
+
+            return port;
+        }
+    }
 }
