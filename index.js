@@ -3,12 +3,11 @@
 const InternalVersion = require('./scripts/version');
 
 const Fs = require('fs');
-const ScriptUtility = require('./scripts/util');
+const Utility = require('./scripts/util');
 const FileConfig = require('./scripts/config');
 const FileLanguange = require('./scripts/language');
 const FileResponse = require('./scripts/response');
 
-const Commander = require('commander');
 const prompt = require('prompt-sync')();
 
 const Discord = require('discord.js');
@@ -21,7 +20,7 @@ const Startup = require('./scripts/startup')();
 
 
 // Assemly
-const util = new ScriptUtility();
+const util = new Utility();
 const parseConfig = new FileConfig();
 const parseLanguage = new FileLanguange();
 const parseResponse = new FileResponse();

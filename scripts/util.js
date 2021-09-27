@@ -78,6 +78,13 @@ module.exports = function (){
             return outputText.trim();
         }
     }
+    this.loop = (num = 0, str = '') => {
+        var returnVal = '';
+        for (let i = 0; i < num; i++) {
+            returnVal += str;
+        }
+        return returnVal;
+    }
     this.testMode = (config = {}) => {
         if(!program.opts().testmode) return config;
 
