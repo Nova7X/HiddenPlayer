@@ -1,10 +1,10 @@
 # Server Information
 server:
   # Server IP address without port (Ask if empty)
-  ip: play.ourmcworld.ml
+  ip: 
   
   # Server port (Ask if empty)
-  port: 39703
+  port: 
   
   # Reconnect interval timout when player disconnects
   reconnectTimeout: 5000
@@ -150,4 +150,4 @@ language: config/language.yml # Language file
 responses: config/response.yml # Custom reponse file
 
 # Config version (Please don't modify)
-version: 1.8.7
+version: 1.8.8
