@@ -154,7 +154,12 @@ function newBot(playerName = 'HiddenPlayer', serverIp = '127.0.0.1', serverPort 
         bot.emit('respawn');
     });
     bot.on('time', () => {
-        
+        if(!config.player.enabled){
+            endBot();
+            return;
+        }
+
+        if(!firstSpawn) return;
     });
 
     // Functions
