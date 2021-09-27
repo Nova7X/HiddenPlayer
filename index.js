@@ -26,6 +26,7 @@ const parseConfig = new FileConfig();
 const parseLanguage = new FileLanguange();
 const parseResponse = new FileResponse();
 const Logger = require('./scripts/logger');
+const { rejects } = require('assert');
 
 parseConfig.location = './config/config.yml';
 parseLanguage.location = './config/language.yml';
@@ -119,10 +120,8 @@ function newBot(playerName = 'HiddenPlayer', serverIp = '127.0.0.1', serverPort 
     bot.loadPlugin(PvpBot);
 
     mcLoggedIn = true;
+    let firstSpawn = false;
 
-    bot.on('ready', () => {
-        mcLog.error('e');
-    });
     bot.on('kicked banned error disconnect', (reason) => {
         mcLog.warn(playerName + " left the game: " + reason)
         endBot();
@@ -131,8 +130,31 @@ function newBot(playerName = 'HiddenPlayer', serverIp = '127.0.0.1', serverPort 
         mcLog.warn(playerName + " Ended!");
         reConnect();
     });
-    bot.on('spawn', () => {
-        if()
+    bot.on('spawn', async () => {
+        if(!firstSpawn){
+            mcLog.log('First spawn of '+playerName);
+            firstSpawn = true;
+            if(config.player.message != null){
+                if(typeof config.player.message == 'object'){
+                    for (const value of Object.keys(config.player.message)) {
+                        
+                        setTimeout(() => { 
+                            bot.chat(config.player.message[value]); 
+                        }, config.player.chatDelay);
+                    }
+                } else {
+                    bot.chat(config.player.message.toString());
+                }
+            }
+        }
+        resetMoves();
+    });
+    bot.on('death', () => {
+        mcLog.warn(playerName + ' died!');
+        bot.emit('respawn');
+    });
+    bot.on('time', () => {
+        
     });
 
     // Functions
@@ -162,7 +184,14 @@ function newBot(playerName = 'HiddenPlayer', serverIp = '127.0.0.1', serverPort 
     function reConnect(){
         setTimeout(() => {
             mcLoggedIn = false;
-            newBot();
+            newBot(config.player.name, config.server.ip, config.server.port, config.player.version);
         }, parseInt(config.server.reconnectTimeout));
+    }
+    function resetMoves(){
+        lasttime = -1;
+        bot.pvp.stop();
+        if (lastaction != null) bot.setControlState(lastaction,false);
+        bot.deactivateItem();
+        moving = false;
     }
 }
