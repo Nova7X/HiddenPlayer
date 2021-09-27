@@ -13,6 +13,7 @@ const prompt = require('prompt-sync')();
 const Discord = require('discord.js');
 
 const Mineflayer = require('mineflayer');
+const MineflayerCmd = require('mineflayer-cmd').plugin;
 const { pathfinder, Movements, goals } = require('mineflayer-pathfinder');
 const PvpBot = require('mineflayer-pvp').plugin;
 
@@ -37,7 +38,7 @@ let config = prefillConfig(parseConfig.parse());
 
 // Core Process
 var mcLoggedIn = false;
-
+newBot(config.player.name, config.server.ip, config.server.port, config.player.version);
 
 // Core Functions
 function prefillConfig(config){
@@ -65,7 +66,7 @@ function prefillConfig(config){
     return util.testMode(config);
 }
 
-function newBot(playerName = 'HiddenPlayer', serverIp = '127.0.0.1', serverPort = 25565){
+function newBot(playerName = 'HiddenPlayer', serverIp = '127.0.0.1', serverPort = 25565, serverVersion = null){
     
     const mcLog = new Logger();
         mcLog.defaultPrefix = 'Minecraft';
@@ -86,10 +87,6 @@ function newBot(playerName = 'HiddenPlayer', serverIp = '127.0.0.1', serverPort 
     let entity = null;
 
     // Connection
-    if (mcLoggedIn) {
-        mcLog.warn('Player already connected to a server');
-        return;
-    }
     switch (true){
         case (mcLoggedIn):
             mcLog.warn("Player already connected to a server");
@@ -103,23 +100,40 @@ function newBot(playerName = 'HiddenPlayer', serverIp = '127.0.0.1', serverPort 
 
     const validateCreds = new validateCredentials();
     serverIp = validateCreds.host(serverIp);
-    serverPort = validateCredentials.port(serverPort);
+    serverPort = validateCreds.port(serverPort);
 
     // Bot core
-    let bot = mineflayer.createBot({
-        host: ip,
-        port: port,
-        username: player,
-        version: version
-    });
+    const connection = {
+        host: serverIp,
+        port: serverPort,
+        username: playerName,
+        version: serverVersion
+    };
 
-    bot.loadPlugin(cmd);
+    mcLog.log('Connecting...');
+    mcLog.log(connection);
+    let bot = Mineflayer.createBot(connection);
+
+    bot.loadPlugin(MineflayerCmd);
     bot.loadPlugin(pathfinder);
     bot.loadPlugin(PvpBot);
 
     mcLoggedIn = true;
 
-
+    bot.on('ready', () => {
+        mcLog.error('e');
+    });
+    bot.on('kicked banned error disconnect', (reason) => {
+        mcLog.warn(playerName + " left the game: " + reason)
+        endBot();
+    });
+    bot.on('end', () => {
+        mcLog.warn(playerName + " Ended!");
+        reConnect();
+    });
+    bot.on('spawn', () => {
+        if()
+    });
 
     // Functions
     function validateCredentials(){
@@ -139,5 +153,16 @@ function newBot(playerName = 'HiddenPlayer', serverIp = '127.0.0.1', serverPort 
 
             return port;
         }
+    }
+    function endBot(){
+        if(mcLoggedIn) return;
+        bot.quit();
+        bot.end();
+    }
+    function reConnect(){
+        setTimeout(() => {
+            mcLoggedIn = false;
+            newBot();
+        }, parseInt(config.server.reconnectTimeout));
     }
 }

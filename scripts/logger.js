@@ -16,7 +16,7 @@ function logMsg(text = '', prefix = null, level = 1){
             prefix = prefix != null ? "[WARN - " + prefix + "] " : "[WARN] ";
             
             if (typeof text == 'string' || typeof text == 'number') {
-                console.warn('\x1b[33m%s\x1b[0m', text);
+                console.warn('\x1b[33m%s\x1b[0m', prefix + text);
             } else {
                 console.log(prefix);
                 console.log(text);
@@ -26,7 +26,7 @@ function logMsg(text = '', prefix = null, level = 1){
             prefix = prefix != null ? "[ERROR - " + prefix + "] " : "[ERROR] ";
             
             if (typeof text == 'string' || typeof text == 'number') {
-                console.log('\x1b[31m%s\x1b[0m', text);
+                console.log('\x1b[31m%s\x1b[0m', prefix + text);
             } else {
                 console.log(prefix);
                 console.log(text);
