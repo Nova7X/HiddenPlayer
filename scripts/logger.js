@@ -36,13 +36,17 @@ function logMsg(text = '', prefix = null, level = 1){
 }
 
 module.exports = function () {
+    this.defaultPrefix = null;
     this.log = (text, prefix) => {
+        if(this.defaultPrefix != null && prefix == null) prefix = this.defaultPrefix;
         logMsg(text, prefix, 1);
     }
     this.warn = (text, prefix) => {
+        if(this.defaultPrefix != null && prefix == null) prefix = this.defaultPrefix;
         logMsg(text, prefix, 2);
     }
     this.error = (text, prefix) => {
+        if(this.defaultPrefix != null && prefix == null) prefix = this.defaultPrefix;
         logMsg(text, prefix, 3);
     }
 }

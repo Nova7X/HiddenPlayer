@@ -2,6 +2,7 @@ const Commander = require('commander');
 const Logger = require('./logger');
 
 const log = new Logger();
+log.defaultPrefix = 'Utility';
 
 const program = new Commander.Command;
     
