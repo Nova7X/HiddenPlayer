@@ -79,7 +79,7 @@ module.exports = function (){
         }
     }
     this.testMode = (config = {}) => {
-        if(!program.opts().testmode) return;
+        if(!program.opts().testmode) return config;
 
         log.log("Test mode enabled!");
 

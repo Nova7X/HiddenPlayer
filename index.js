@@ -6,6 +6,7 @@ const Fs = require('fs');
 const ScriptUtility = require('./scripts/util');
 const FileConfig = require('./scripts/config');
 const FileLanguange = require('./scripts/language');
+const FileResponse = require('./scripts/response');
 
 const Commander = require('commander');
 const prompt = require('prompt-sync')();
@@ -23,20 +24,26 @@ const Startup = require('./scripts/startup')();
 const util = new ScriptUtility();
 const parseConfig = new FileConfig();
 const parseLanguage = new FileLanguange();
+const parseResponse = new FileResponse();
 const Logger = require('./scripts/logger');
 
 parseConfig.location = './config/config.yml';
 parseLanguage.location = './config/language.yml';
-let config = prefillConfig(parseConfig.parse());
-let language = parseLanguage.parse();
+parseResponse.location = './config/response.yml';
 let log = new Logger();
+let language = {};
+let response = {};
+let config = prefillConfig(parseConfig.parse());
+
 
 // Core Process
-
+log.log(language);
+log.log(response);
+log.log(config);
 
 
 // Core Functions
-function prefillConfig(config = {}){
+function prefillConfig(config){
 
     if(config.player.enabled){
         switch (true){
@@ -55,5 +62,8 @@ function prefillConfig(config = {}){
         if(config.player.name == '' || typeof config.player.name !== 'string') throw new Error("Invalid Player Name: " + config.player.name);
     }
 
+    response = parseResponse.parse();
+    language = parseLanguage.parse();
+    
     return util.testMode(config);
 }
