@@ -5,6 +5,7 @@ const InternalVersion = require('./scripts/version');
 const Fs = require('fs');
 const ScriptUtility = require('./scripts/util');
 const FileConfig = require('./scripts/config');
+const FileLanguange = require('./scripts/language');
 
 const Commander = require('commander');
 const prompt = require('prompt-sync')();
@@ -21,13 +22,16 @@ const Startup = require('./scripts/startup')();
 // Assemly
 const util = new ScriptUtility();
 const parseConfig = new FileConfig();
+const parseLanguage = new FileLanguange();
 const Logger = require('./scripts/logger');
 
 parseConfig.location = './config/config.yml';
+parseLanguage.location = './config/language.yml';
 let config = prefillConfig(parseConfig.parse());
+let language = parseLanguage.parse();
 let log = new Logger();
 
-// Core process
+// Core Process
 
 
 
