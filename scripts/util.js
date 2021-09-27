@@ -1,4 +1,19 @@
 const Commander = require('commander');
+const Logger = require('./logger');
+
+const log = new Logger();
+
+const program = new Commander.Command;
+    
+    program
+            .option('--testmode', 'Enable testmode')
+            .option('--minecraft-player-name <playername>', 'Player name for testmode Minecraft bot')
+            .option('--minecraft-server-ip <ip>', 'Server IP for testmode server')
+            .option('--minecraft-server-port <port>', 'Server port for testmode server')
+            .option('--minecraft-player-join-msg <message>', 'test mode on join message')
+            .option('--discord <token>', 'Testmode discord bot')
+            .option('--testmode-timeout <timeout>', 'Test mode timeout in milliseconds')
+    program.parse();
 
 module.exports = function (){
     this.loop = (num = 0, str = '') => {
@@ -62,7 +77,45 @@ module.exports = function (){
             return outputText.trim();
         }
     }
-    this.testMode = (config) => {
+    this.testMode = (config = {}) => {
+        if(!program.opts().testmode) return;
+
+        log.log("Test mode enabled!");
+
+        config['server']['ip'] = 'play.ourmcworld.ml';
+        config['server']['port'] = 39703;
+        config['player']['name']= 'HiddenPlayer';
+
+        let timeout = 300000;
+
+        switch (true) {
+            case (program.opts().minecraftServerIp != null):
+                config['server']['ip'] = program.opts().minecraftServerIp
+                break;
+            case (program.opts().minecraftServerPort != null):
+                config['server']['port'] = program.opts().minecraftServerPort
+                break;
+            case (program.opts().minecraftPlayerName != null):
+                config['player']['name'] = program.opts().minecraftPlayerName
+                break;        
+            case (program.opts().minecraftPlayerJoinMsg != null):
+                config['player']['message'] = program.opts().minecraftPlayerJoinMsg
+                break;
+            case (program.opts().discord != null):
+                config['discord']['token'] = program.opts().discord
+                break;
+            case (program.opts().testmodeTimeout != null):
+                timeout = parseInt(program.opts().testmodeTimeout, 10)
+                break;        
+            default:
+                break;
+        }
+
+        setTimeout(() => {
+            log.log('Test mode timeout');
+            process.exit(0);
+        }, timeout);
+
         return config;
     }
 }
