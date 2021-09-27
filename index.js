@@ -27,9 +27,8 @@ parseConfig.location = './config/config.yml';
 let config = prefillConfig(parseConfig.parse());
 let log = new Logger();
 
+// Core process
 
-// Core Proccess
-log.log(config);
 
 
 // Core Functions
