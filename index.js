@@ -1,4 +1,5 @@
 // HiddePlayer GPL-3.0 License
+// Modules
 const InternalVersion = require('./scripts/version');
 
 const Fs = require('fs');
@@ -16,13 +17,22 @@ const PvpBot = require('mineflayer-pvp').plugin;
 
 const Startup = require('./scripts/startup')();
 
-let util = new ScriptUtility();
-let parseConfig = new FileConfig();
-    parseConfig.location = './config/config.yml';
+
+// Assemly
+const util = new ScriptUtility();
+const parseConfig = new FileConfig();
+const Logger = require('./scripts/logger');
+
+parseConfig.location = './config/config.yml';
 let config = prefillConfig(parseConfig.parse());
+let log = new Logger();
 
-console.log(config);
 
+// Core Proccess
+log.log(config);
+
+
+// Core Functions
 function prefillConfig(config = {}){
 
     if(config.player.enabled){

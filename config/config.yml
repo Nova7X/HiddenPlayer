@@ -139,12 +139,9 @@ discord:
 
 # Debugging log
 debug:
-  enabled: true  # Enable logs
   movements: false # Log player movements
   discord_chats: true # Show discord chats
   minecraft_chats: true # Show in-game chats
-  prefix: '' # Debug mode playername prefix
-  suffix: '' # Debug mode playername suffix
 
 language: config/language.yml # Language file 
 responses: config/response.yml # Custom reponse file

@@ -2,7 +2,7 @@ const Fs = require('fs');
 const Yml = require('yaml');
 const Version = require('./version');
 
-module.exports = function (){
+module.exports = function () {
     this.location = null;
     this.parse = () => {
         if(!this.location || this.location == null) throw new Error("Config path is null");
