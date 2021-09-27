@@ -1,10 +1,10 @@
 # Server Information
 server:
   # Server IP address without port (Ask if empty)
-  ip: 
+  ip: play.ourmcworld.ml
   
   # Server port (Ask if empty)
-  port: 
+  port: 39703
   
   # Reconnect interval timout when player disconnects
   reconnectTimeout: 5000
