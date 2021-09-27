@@ -37,12 +37,12 @@ function logMsg(text = '', prefix = null, level = 1){
 
 module.exports = function () {
     this.log = (text, prefix) => {
-        logMsg(text ,prefix, 1);
+        logMsg(text, prefix, 1);
     }
     this.warn = (text, prefix) => {
-        logMsg(text ,prefix, 2);
+        logMsg(text, prefix, 2);
     }
     this.error = (text, prefix) => {
-        logMsg(text ,prefix, 3);
+        logMsg(text, prefix, 3);
     }
 }
