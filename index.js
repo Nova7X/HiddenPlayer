@@ -42,6 +42,10 @@ let bot = new Minecraft();
     bot.serverVersion = config.player.version;
     bot.newBot();
 
+    bot.events.on('chat', (username, message) => {
+        log.error(username +' > '+ message);
+    });
+
 
 // Core Functions
 function prefillConfig(config){

@@ -4,10 +4,13 @@ const Mineflayer = require('mineflayer');
 const MineflayerCmd = require('mineflayer-cmd').plugin;
 const { pathfinder, Movements, goals } = require('mineflayer-pathfinder');
 const PvpBot = require('mineflayer-pvp').plugin;
+const Emitter = require('events').EventEmitter;
+const { read } = require('fs');
 
 const util = new Utility();
 const mcLog = new Logger();
 module.exports = function (){
+    this.events = new Emitter();
     this.mcLoggedIn = false;            // If the has logged in
                                         //
     this.serverIp = '';                 // Server IP 
@@ -26,7 +29,7 @@ module.exports = function (){
     
     this.consolePrefix = 'Minecraft';                       // Console prefix
     this.logMovements = false;       
-    this.disabled = false;                       // Log movements to console
+    this.disabled = false;                      // Log movements to console
 
     var onPvp = false;
     var moving = false;
@@ -52,6 +55,7 @@ module.exports = function (){
 
         // Bot
         const connection = { host: serverIp, port: serverPort, username: playerName, version: serverVersion };
+        this.events.emit('ready', this.playerName, this.serverIp, this.serverPort, this.serverVersion);
     
         mcLog.log('Connecting...');
         mcLog.log(connection);
@@ -66,22 +70,27 @@ module.exports = function (){
     
         bot.on('kicked', (reason) => {
             mcLog.warn(playerName + " left the game: " + reason);
+            this.events.emit('kicked', reason);
             this.endBot(bot);
         });
         bot.on('error', (reason) => {
             mcLog.error(playerName + " left the game: " + reason);
+            this.events.emit('error', reason);
             this.endBot(bot);
         });
     
         bot.on('end', () => {
             mcLog.warn(playerName + " Ended!");
+            this.events.emit('end');
             this.reConnect(bot);
         });
         bot.on('spawn', async () => {
+            this.events.emit('spawn');
             if(!firstSpawn){
                 mcLog.log('First spawn of '+playerName);
                 firstSpawn = true;
                 let joinMessage = this.joinMessage;
+                this.events.emit('firstSpawn');
                 if(joinMessage != null){
                     if(typeof joinMessage == 'object'){
                         for (const value of Object.keys(joinMessage)) {
@@ -100,20 +109,24 @@ module.exports = function (){
         bot.on('death', () => {
             mcLog.warn(playerName + ' died!');
             bot.emit('respawn');
+            this.events.emit('death');
         });
         bot.on('time', () => {
             if(this.isDisabled()){ this.endBot(bot); return; }
             if(!firstSpawn) return;
-    
+            
+            this.events.emit('time');
             entity = bot.nearestEntity();
             if(entity && entity.position && entity.isValid && entity.type == 'mob' || entity && entity.position && entity.isValid && entity.type == 'player') bot.lookAt(entity.position.offset(0, 1.6, 0));
             if(this.playerPvp){
                 if(entity && entity.kind && entity.isValid && entity.type == 'mob' && entity.kind.toLowerCase() == 'hostile mobs'){
                     onPvp = true;
                     bot.pvp.attack(entity);
+                    this.events.emit('onPvpStart', entity);
                 } else {
                     onPvp = false;
                     bot.pvp.stop();
+                    this.events.emit('onPvpStop', entity);
                 }
             }
     
@@ -163,6 +176,7 @@ module.exports = function (){
             }
         });
         bot.on('chat', (player, message) => {
+            this.events.emit('chat', player, message);
             mcLog.log('Chat: '+player+' > '+message);
         });
     }
@@ -184,12 +198,14 @@ module.exports = function (){
     this.reConnect = (bot) => {
         if(!bot) return;
         setTimeout(() => {
+            this.events.emit('reConnect');
             this.mcLoggedIn = false;
             this.newBot();
         }, parseInt(this.reconnectTimeout));
     }
     this.resetMoves = (bot) => {
         if(!bot) return;
+        this.events.emit('movesReset');
         this.lastTime = -1;
         bot.pvp.stop();
         if (this.lastAction != null) bot.setControlState(this.lastAction,false);
