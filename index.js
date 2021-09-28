@@ -126,16 +126,8 @@ function newBot(playerName = 'HiddenPlayer', serverIp = '127.0.0.1', serverPort 
         mcLog.warn(playerName + " left the game: " + reason)
         endBot();
     });
-    bot.on('disconnect', (reason) => {
-        mcLog.warn(playerName + " disconnected: " + reason)
-        endBot();
-    });
     bot.on('error', (reason) => {
         mcLog.error(playerName + " left the game: " + reason)
-        endBot();
-    });
-    bot.on('banned', (reason) => {
-        mcLog.error(playerName + " banned from server: " + reason)
         endBot();
     });
 
@@ -215,14 +207,7 @@ function newBot(playerName = 'HiddenPlayer', serverIp = '127.0.0.1', serverPort 
 
             if(config.debug.movements){
                 mcLog.log('Movements:');
-                mcLog.log({
-                    age: bot.time.age,
-                    lasttime: lasttime,
-                    interval: interval,
-                    lastaction: lastaction,
-                    moving: moving,
-                    onPVP: onPVP
-                });
+                mcLog.log({ age: bot.time.age, lasttime: lasttime, interval: interval, lastaction: lastaction, moving: moving, onPVP: onPVP });
             }
         }
 
@@ -237,6 +222,9 @@ function newBot(playerName = 'HiddenPlayer', serverIp = '127.0.0.1', serverPort 
                 jump = true;
             }, 1000);
         }
+    });
+    bot.on('chat', (player, message) => {
+        mcLog.log('Chat: '+player+' > '+message);
     });
 
     // Functions

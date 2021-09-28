@@ -26,7 +26,7 @@ module.exports = function (){
     }
     this.replaceAll = (str, find, replace) => {
         if(str == null) { return; }
-        return str.toString().replace(new RegExp(escapeRegExp(find), 'g'), replace);
+        return str.toString().replace(new RegExp(this.escapeRegExp(find), 'g'), replace);
     }
     this.randomInteger = (min, max) => {
         return Math.floor(Math.random() * (max - min + 1)) + min;
