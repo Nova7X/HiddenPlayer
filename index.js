@@ -122,10 +122,23 @@ function newBot(playerName = 'HiddenPlayer', serverIp = '127.0.0.1', serverPort 
     mcLoggedIn = true;
     let firstSpawn = false;
 
-    bot.on('kicked banned error disconnect', (reason) => {
+    bot.on('kicked', (reason) => {
         mcLog.warn(playerName + " left the game: " + reason)
         endBot();
     });
+    bot.on('disconnect', (reason) => {
+        mcLog.warn(playerName + " disconnected: " + reason)
+        endBot();
+    });
+    bot.on('error', (reason) => {
+        mcLog.error(playerName + " left the game: " + reason)
+        endBot();
+    });
+    bot.on('banned', (reason) => {
+        mcLog.error(playerName + " banned from server: " + reason)
+        endBot();
+    });
+
     bot.on('end', () => {
         mcLog.warn(playerName + " Ended!");
         reConnect();
