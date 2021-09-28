@@ -185,7 +185,7 @@ module.exports = function (){
         if(!bot) return;
         setTimeout(() => {
             this.mcLoggedIn = false;
-            newBot(this.playerName, this.serverIp, this.serverPort, this.serverVersion);
+            this.newBot();
         }, parseInt(this.reconnectTimeout));
     }
     this.resetMoves = (bot) => {
