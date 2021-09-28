@@ -160,6 +160,70 @@ function newBot(playerName = 'HiddenPlayer', serverIp = '127.0.0.1', serverPort 
         }
 
         if(!firstSpawn) return;
+
+        entity = bot.nearestEntity();
+        if(entity && entity.position && entity.isValid && entity.type == 'mob' || entity && entity.position && entity.isValid && entity.type == 'player') bot.lookAt(entity.position.offset(0, 1.6, 0));
+        if(config.player.pvp.enabled){
+            if(entity && entity.kind && entity.isValid && entity.type == 'mob' && entity.kind.toLowerCase() == 'hostile mobs'){
+                onPVP = true;
+                bot.pvp.attack(entity);
+            } else {
+                onPVP = false;
+                bot.pvp.stop();
+            }
+        }
+
+        // Movements
+        if (lasttime < 0) {
+            lasttime = bot.time.age;
+            mcLog.log("Last time set!");
+            return;
+        }
+
+        let randomadd = Math.random() * maxrandom * 50;
+        let interval = moveinterval * 20 + randomadd;
+
+        if (bot.time.age - lasttime > interval) {
+            if (onPVP) { return; }
+
+            if (moving){
+                bot.setControlState(lastaction,false);
+                bot.deactivateItem();
+
+                moving = false;
+            } else{
+                lastaction = actions[Math.floor(Math.random() * actions.length)];
+                bot.setControlState(lastaction,true);
+                bot.activateItem();
+                
+                moving = true;
+                lasttime = bot.time.age;
+            }
+
+            if(config.debug.movements){
+                mcLog.log('Movements:');
+                mcLog.log({
+                    age: bot.time.age,
+                    lasttime: lasttime,
+                    interval: interval,
+                    lastaction: lastaction,
+                    moving: moving,
+                    onPVP: onPVP
+                });
+            }
+        }
+
+        //bot jump
+        if(jump){
+            bot.setControlState('jump', true);
+            bot.setControlState('jump', false);
+            jump = false
+        } else {
+            bot.setControlState('jump', false);
+            setTimeout(() => {
+                jump = true;
+            }, 1000);
+        }
     });
 
     // Functions
