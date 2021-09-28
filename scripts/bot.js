@@ -10,7 +10,7 @@ const { read } = require('fs');
 const util = new Utility();
 const mcLog = new Logger();
 module.exports = function (){
-    this.events = new Emitter();
+    const event = new Emitter();
     this.mcLoggedIn = false;            // If the has logged in
                                         //
     this.serverIp = '';                 // Server IP 
@@ -55,7 +55,7 @@ module.exports = function (){
 
         // Bot
         const connection = { host: serverIp, port: serverPort, username: playerName, version: serverVersion };
-        this.events.emit('ready', this.playerName, this.serverIp, this.serverPort, this.serverVersion);
+        event.emit('ready', this.playerName, this.serverIp, this.serverPort, this.serverVersion);
     
         mcLog.log('Connecting...');
         mcLog.log(connection);
@@ -70,27 +70,26 @@ module.exports = function (){
     
         bot.on('kicked', (reason) => {
             mcLog.warn(playerName + " left the game: " + reason);
-            this.events.emit('kicked', reason);
+            event.emit('kicked', reason);
             this.endBot(bot);
         });
         bot.on('error', (reason) => {
             mcLog.error(playerName + " left the game: " + reason);
-            this.events.emit('error', reason);
+            event.emit('error', reason);
             this.endBot(bot);
         });
-    
         bot.on('end', () => {
             mcLog.warn(playerName + " Ended!");
-            this.events.emit('end');
+            event.emit('end');
             this.reConnect(bot);
         });
         bot.on('spawn', async () => {
-            this.events.emit('spawn');
+            event.emit('spawn');
             if(!firstSpawn){
                 mcLog.log('First spawn of '+playerName);
                 firstSpawn = true;
                 let joinMessage = this.joinMessage;
-                this.events.emit('firstSpawn');
+                event.emit('firstSpawn');
                 if(joinMessage != null){
                     if(typeof joinMessage == 'object'){
                         for (const value of Object.keys(joinMessage)) {
@@ -109,24 +108,24 @@ module.exports = function (){
         bot.on('death', () => {
             mcLog.warn(playerName + ' died!');
             bot.emit('respawn');
-            this.events.emit('death');
+            event.emit('death');
         });
         bot.on('time', () => {
             if(this.isDisabled()){ this.endBot(bot); return; }
             if(!firstSpawn) return;
             
-            this.events.emit('time');
+            event.emit('time');
             entity = bot.nearestEntity();
             if(entity && entity.position && entity.isValid && entity.type == 'mob' || entity && entity.position && entity.isValid && entity.type == 'player') bot.lookAt(entity.position.offset(0, 1.6, 0));
             if(this.playerPvp){
                 if(entity && entity.kind && entity.isValid && entity.type == 'mob' && entity.kind.toLowerCase() == 'hostile mobs'){
                     onPvp = true;
                     bot.pvp.attack(entity);
-                    this.events.emit('onPvpStart', entity);
+                    event.emit('onPvpStart', entity);
                 } else {
                     onPvp = false;
                     bot.pvp.stop();
-                    this.events.emit('onPvpStop', entity);
+                    event.emit('onPvpStop', entity);
                 }
             }
     
@@ -176,7 +175,7 @@ module.exports = function (){
             }
         });
         bot.on('chat', (player, message) => {
-            this.events.emit('chat', player, message);
+            event.emit('chat', player, message);
             mcLog.log('Chat: '+player+' > '+message);
         });
     }
@@ -198,14 +197,14 @@ module.exports = function (){
     this.reConnect = (bot) => {
         if(!bot) return;
         setTimeout(() => {
-            this.events.emit('reConnect');
+            event.emit('reConnect');
             this.mcLoggedIn = false;
             this.newBot();
         }, parseInt(this.reconnectTimeout));
     }
     this.resetMoves = (bot) => {
         if(!bot) return;
-        this.events.emit('movesReset');
+        event.emit('movesReset');
         this.lastTime = -1;
         bot.pvp.stop();
         if (this.lastAction != null) bot.setControlState(this.lastAction,false);
@@ -228,4 +227,6 @@ module.exports = function (){
         }
         return serverPort;
     }
+
+    this.events = event;
 }
