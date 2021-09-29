@@ -41,6 +41,9 @@ let bot = new Minecraft();
     bot.serverPort = config.server.port
     bot.serverVersion = config.player.version;
     bot.newBot();
+    bot.on('chat', (username, message) => {
+        
+    });
 
 
 // Core Functions
