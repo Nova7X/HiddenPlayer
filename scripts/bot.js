@@ -34,6 +34,7 @@ module.exports = function (){
     var onPvp = false;
     var moving = false;
     var jump = true;
+    var bot = null;
 
     this.newBot = () => {
         mcLog.defaultPrefix = this.consolePrefix;
@@ -59,7 +60,7 @@ module.exports = function (){
     
         mcLog.log('Connecting...');
         mcLog.log(connection);
-        var bot = Mineflayer.createBot(connection);
+        bot = Mineflayer.createBot(connection);
     
         bot.loadPlugin(MineflayerCmd);
         bot.loadPlugin(pathfinder);
@@ -190,13 +191,19 @@ module.exports = function (){
         if(this.disabled) return true;
         return false;
     }
+    this.isConnected = () => {
+        return this.mcLoggedIn;
+    }
 
-    this.endBot = (bot) => {
+    this.endBot = () => {
         if(this.mcLoggedIn || !bot) return;
         bot.quit();
         bot.end();
     }
-    this.reConnect = (bot) => {
+    this.getBot = () => {
+        return bot;
+    }
+    this.reConnect = () => {
         if(!bot) return;
         setTimeout(() => {
             event.emit('reConnect');
@@ -204,7 +211,7 @@ module.exports = function (){
             this.newBot();
         }, parseInt(this.reconnectTimeout));
     }
-    this.resetMoves = (bot) => {
+    this.resetMoves = () => {
         if(!bot) return;
         event.emit('movesReset');
         this.lastTime = -1;
@@ -220,7 +227,7 @@ module.exports = function (){
         if(serverIp == '') throw new Error("Empty Minecraft player host: "+serverIp);
 
         return serverIp;
-    }
+    };
     this.validateCredsPort = (serverPort) => {
         serverPort = parseInt(serverPort);
 
@@ -229,6 +236,11 @@ module.exports = function (){
         }
         return serverPort;
     }
+
+    this.chat = (text) => {
+        if(!bot) return;
+        bot.chat(text);
+    };
 
     this.events = event;
 }
