@@ -30,7 +30,7 @@ let language = {};
 let response = {};
 let config = prefillConfig(parseConfig.parse());
 
-// Core Process
+// Create bot Process
 let bot = new Minecraft();
     bot.playerName = config.player.name
     bot.playerPvp = config.player.pvp.enabled
