@@ -95,10 +95,12 @@ module.exports = function (){
                         for (const value of Object.keys(joinMessage)) {
                             
                             setTimeout(() => { 
+                                mcLog.log('Message sent: '+joinMessage[value]);
                                 bot.chat(joinMessage[value]); 
                             }, chatDelay);
                         }
                     } else {
+                        mcLog.log('Message sent: '+joinMessage.toString());
                         bot.chat(joinMessage.toString());
                     }
                 }
