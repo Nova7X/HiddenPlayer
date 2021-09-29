@@ -28,8 +28,8 @@ module.exports = function (){
     this.lastAction = null;                                 // Last recorded action
     
     this.consolePrefix = 'Minecraft';                       // Console prefix
-    this.logMovements = false;       
-    this.disabled = false;                      // Log movements to console
+    this.logMovements = false;                              // Log movements to console
+    this.disabled = false;                                  // Is player disabled?
 
     var onPvp = false;
     var moving = false;
